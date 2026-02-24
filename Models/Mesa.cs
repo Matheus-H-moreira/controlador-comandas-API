@@ -1,5 +1,6 @@
 ﻿namespace Controlador_de_comandas.Models
 {
+    //Modelo de dados para a entidade "Mesa", representando uma mesa em um restaurante
     public class Mesa
     {
         public int Id { get; set; }

@@ -1,5 +1,6 @@
 ﻿namespace Controlador_de_comandas.Models
 {
+    //Modelo de dados para a entidade "ItemComanda", representando um item pedido em uma comanda
     public class ItemComanda
     {
         public int Id { get; set; }
