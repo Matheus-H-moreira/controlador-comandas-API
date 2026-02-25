@@ -1,5 +1,22 @@
+# Build
 bin/
 obj/
+
+# Visual Studio
 .vs/
+*.user
+*.suo
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# SQLite
 *.db
-*.sqlite
+*.db-shm
+*.db-wal
+
+# Arquivos de ambiente
+appsettings.Development.json
