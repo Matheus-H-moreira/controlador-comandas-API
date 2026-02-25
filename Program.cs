@@ -1,5 +1,7 @@
 using Controlador_de_comandas.Data;
 using Controlador_de_comandas.Models;
+using Controlador_de_comandas.EndPoints;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -26,17 +28,6 @@ if (app.Environment.IsDevelopment())
         app.MapScalarApiReference();
 }
 
-app.MapPost("/mesas", async (Mesa mesa, AppDbContext db) =>
-{
-    db.Mesas.Add(mesa);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/mesas/{mesa.Id}", mesa);
-});
-
-app.MapGet("/mesas", async (AppDbContext db) =>
-{
-    return await db.Mesas.ToListAsync();
-});
+app.MapMesaEndPoints();
 
 app.Run();
