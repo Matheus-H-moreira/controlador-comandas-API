@@ -1,6 +1,6 @@
 @Controlador_de_comandas_HostAddress = http://localhost:5035
 
-GET {{Controlador_de_comandas_HostAddress}}/weatherforecast/
+GET {{Controlador_de_comandas_HostAddress}}/mesas/
 Accept: application/json
 
 ###

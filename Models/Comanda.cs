@@ -10,7 +10,6 @@
         public string Status { get; set; } = string.Empty;
         public DateTime DataAbertura { get; set; }
 
-        public List<ItemComanda> Pedidos { get; set; }
-
+        public List<ItemComanda> Pedidos { get; set; } = new();
     }
 }

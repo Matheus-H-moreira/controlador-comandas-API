@@ -29,5 +29,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapMesaEndPoints();
+app.MapProdutoEndPoints();
 
 app.Run();

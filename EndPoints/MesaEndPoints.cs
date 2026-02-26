@@ -59,6 +59,6 @@ namespace Controlador_de_comandas.EndPoints
 
                 return Results.NoContent();
             });
-        }
+        } 
     }
 }
