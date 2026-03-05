@@ -8,6 +8,7 @@ namespace Controlador_de_comandas.EndPoints
     {
         public static void MapProdutoEndPoints(this WebApplication app)
         {
+            //Cria um novo produto
             app.MapPost("/produto", async (Produto produto, AppDbContext db) =>
             {
                 db.Produtos.Add(produto);
@@ -16,15 +17,17 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Created($"/produtos/{produto.Id}", produto);
             });
 
+            //Lista todos os produtos cadastrados
             app.MapGet("/produto", async (AppDbContext db) =>
             {
                 var produtos = await db.Produtos.ToListAsync();
                 return Results.Ok(produtos);
             });
 
-            app.MapGet("/produto/{id}", async (int id, AppDbContext db) =>
+            //Busca um produto específico pelo Id
+            app.MapGet("/produto/{nome}", async (string nome, AppDbContext db) =>
             {
-                var produtoAchado = await db.Produtos.FindAsync(id);
+                var produtoAchado = await db.Produtos.FindAsync(nome);
 
                 if (produtoAchado == null)
                     return Results.NotFound();
@@ -32,6 +35,7 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Ok(produtoAchado);
             });
 
+            //Atualiza completamente os dados de um produto
             app.MapPut("/produto/{id}", async (int id, Produto produtoNovo, AppDbContext db) =>
             {
                 var produtoAchado = await db.Produtos.FindAsync(id);
@@ -46,6 +50,7 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.NoContent();
             });
 
+            //Remove um produto do sistema
             app.MapDelete("/produto/{id}", async (int id, AppDbContext db) =>
             {
                 var produtoAchado = await db.Produtos.FindAsync(id);

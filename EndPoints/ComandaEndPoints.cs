@@ -8,26 +8,31 @@ namespace Controlador_de_comandas.EndPoints
     {
         public static void MapComandaEndPoints(this WebApplication app)
         {
+            //Cria uma nova comanda
             app.MapPost("/comandas", async (Comanda comanda, AppDbContext db) =>
             {
+                //Verifica se a mesa informada existe antes de criar a comanda
                 if (!await db.Mesas.AnyAsync(m => m.Id == comanda.MesaId))
                     return Results.NotFound();
 
+                //Define automaticamente o status e a data de abertura
                 comanda.Status = "Aberta";
                 comanda.DataAbertura = DateTime.Now;
 
                 db.Add(comanda);
                 await db.SaveChangesAsync();
 
-                return Results.Created($"/comandaS/{comanda.Id}", comanda);
+                return Results.Created($"/comandas/{comanda.Id}", comanda);
             });
 
+            //Lista todas as comandas
             app.MapGet("/comandas", async (AppDbContext db) =>
             {
                 var comandas = await db.Comandas.ToListAsync();
                 return Results.Ok(comandas);
             });
 
+            //Busca uma comanda específica pelo Id
             app.MapGet("/comandas/{id}", async (int id, AppDbContext db) =>
             {
                 var comanda = await db.Comandas.FindAsync(id);
@@ -38,6 +43,7 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Ok(comanda);
             });
 
+            //Atualiza apenas o status da comanda
             app.MapPatch("/comandas/{id}/status", async (int id, string status, AppDbContext db) =>
             {
                 var comanda = await db.Comandas.FindAsync(id);

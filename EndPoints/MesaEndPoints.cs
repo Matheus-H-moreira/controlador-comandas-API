@@ -1,6 +1,7 @@
 ﻿using Controlador_de_comandas.Data;
 using Controlador_de_comandas.Models;
 using Microsoft.EntityFrameworkCore;
+using Controlador_de_comandas.DTOs.MesaDTOs;
 
 namespace Controlador_de_comandas.EndPoints
 {
@@ -8,20 +9,30 @@ namespace Controlador_de_comandas.EndPoints
     {
         public static void MapMesaEndPoints(this WebApplication app)
         {
-            app.MapPost("/mesas", async (Mesa mesa, AppDbContext db) =>
+            //Cria uma nova mesa
+            app.MapPost("/mesas", async (CreateMesaDTO dto, AppDbContext db) =>
             {
+                var mesa = new Mesa
+                {
+                    Numero = dto.NumeroMesa,
+                    QuantidadeMax = dto.QuantidadeMaxPessoas,
+                    Status = dto.Status
+                };
+                
                 db.Mesas.Add(mesa);
                 await db.SaveChangesAsync();
 
                 return Results.Created($"/mesas/{mesa.Id}", mesa);
             });
 
+            //Lista todas as mesas cadastradas
             app.MapGet("/mesas", async (AppDbContext db) =>
             {
-                var mesas = await db.Mesas.ToListAsync();
+                var mesas = await db.Mesas.AsNoTracking().ToListAsync();
                 return Results.Ok(mesas);
             });
 
+            //Busca uma mesa específica pelo Id
             app.MapGet("/mesas/{id}", async (int id, AppDbContext db) =>
             {
                 var mesa = await db.Mesas.FindAsync(id);
@@ -32,21 +43,49 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Ok(mesa);
             });
 
-            app.MapPut("/mesas/{id}", async (int id, Mesa mesa, AppDbContext db) =>
+            //Atualiza o número de uma mesa
+            app.MapPatch("/mesas/numero/{id}", async (int id, UpdateNumMesaDTO dto, AppDbContext db) =>
             {
                 var mesaAchada = await db.Mesas.FindAsync(id);
 
                 if (mesaAchada == null)
                     return Results.NotFound();
 
-                mesaAchada.Numero = mesa.Numero;
-                mesaAchada.QuantidadeMax = mesa.QuantidadeMax;
-                mesaAchada.Status = mesa.Status;
-
+                mesaAchada.Numero = dto.NumeroMesa;
                 await db.SaveChangesAsync();
+
                 return Results.NoContent();
             });
 
+            //Atualiza o número de pessoas máxima de uma mesa
+            app.MapPatch("/mesas/quantidadePessoas/{id}", async (int id, UpdatePessoasMesaDTO dto, AppDbContext db) =>
+            {
+                var mesaAchada = await db.Mesas.FindAsync(id);
+
+                if (mesaAchada == null)
+                    return Results.NotFound();
+
+                mesaAchada.QuantidadeMax = dto.QuantidadeMaxPessoas;
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            //Atualiza o status de uma mesa
+            app.MapPatch("/mesas/status/{id}", async (int id, UpdateStatusDTO dto, AppDbContext db) =>
+            {
+                var mesaAchada = await db.Mesas.FindAsync(id);
+
+                if (mesaAchada == null)
+                    return Results.NotFound();
+
+                mesaAchada.Status = dto.Status;
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            //Remove uma mesa do sistema
             app.MapDelete("/mesas/{id}", async (int id, AppDbContext db) =>
             {
                 var mesa = await db.Mesas.FindAsync(id);
