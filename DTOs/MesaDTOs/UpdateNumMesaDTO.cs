@@ -2,6 +2,7 @@
 {
     public class UpdateNumMesaDTO
     {
+        // DTO para atualizar o número de uma mesa
         public int NumeroMesa { get; set; }
     }
 }

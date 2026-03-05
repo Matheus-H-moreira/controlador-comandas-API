@@ -1,6 +1,7 @@
 ﻿using Controlador_de_comandas.Data;
 using Controlador_de_comandas.Models;
 using Microsoft.EntityFrameworkCore;
+using Controlador_de_comandas.DTOs.ProdutoDTOs;
 
 namespace Controlador_de_comandas.EndPoints
 {
@@ -9,8 +10,14 @@ namespace Controlador_de_comandas.EndPoints
         public static void MapProdutoEndPoints(this WebApplication app)
         {
             //Cria um novo produto
-            app.MapPost("/produto", async (Produto produto, AppDbContext db) =>
+            app.MapPost("/produtos", async (CreateProdutoDTO dto, AppDbContext db) =>
             {
+                var produto = new Produto
+                {
+                    NomeProduto = dto.NomeProduto,
+                    PrecoProduto = dto.PrecoProduto
+                };
+
                 db.Produtos.Add(produto);
                 await db.SaveChangesAsync();
 
@@ -18,16 +25,16 @@ namespace Controlador_de_comandas.EndPoints
             });
 
             //Lista todos os produtos cadastrados
-            app.MapGet("/produto", async (AppDbContext db) =>
+            app.MapGet("/produtos", async (AppDbContext db) =>
             {
                 var produtos = await db.Produtos.ToListAsync();
                 return Results.Ok(produtos);
             });
 
             //Busca um produto específico pelo Id
-            app.MapGet("/produto/{nome}", async (string nome, AppDbContext db) =>
+            app.MapGet("/produtos/{nome}", async (string nome, AppDbContext db) =>
             {
-                var produtoAchado = await db.Produtos.FindAsync(nome);
+                var produtoAchado = await db.Produtos.FirstOrDefaultAsync(p => p.NomeProduto == nome);
 
                 if (produtoAchado == null)
                     return Results.NotFound();
@@ -35,23 +42,36 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Ok(produtoAchado);
             });
 
-            //Atualiza completamente os dados de um produto
-            app.MapPut("/produto/{id}", async (int id, Produto produtoNovo, AppDbContext db) =>
+            //Atualiza o nome de um produto
+            app.MapPatch("/produtos/nome/{id}", async (int id, UpdateNomeProdutoDTO dto, AppDbContext db) =>
             {
                 var produtoAchado = await db.Produtos.FindAsync(id);
 
                 if (produtoAchado == null)
                     return Results.NotFound();
 
-                produtoAchado.NomeProduto = produtoNovo.NomeProduto;
-                produtoAchado.PrecoProduto = produtoNovo.PrecoProduto;
+                produtoAchado.NomeProduto = dto.NomeProduto;
+
+                await db.SaveChangesAsync();
+                return Results.NoContent();
+            });
+
+            //Atualiza o preço de um produto
+            app.MapPatch("/produtos/preco/{id}", async (int id, UpdatePrecoProdutoDTO dto, AppDbContext db) =>
+            {
+                var produtoAchado = await db.Produtos.FindAsync(id);
+
+                if (produtoAchado == null)
+                    return Results.NotFound();
+
+                produtoAchado.PrecoProduto = dto.PrecoProduto;
 
                 await db.SaveChangesAsync();
                 return Results.NoContent();
             });
 
             //Remove um produto do sistema
-            app.MapDelete("/produto/{id}", async (int id, AppDbContext db) =>
+            app.MapDelete("/produtos/{id}", async (int id, AppDbContext db) =>
             {
                 var produtoAchado = await db.Produtos.FindAsync(id);
 

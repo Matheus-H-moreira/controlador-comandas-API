@@ -2,6 +2,7 @@
 {
     public class UpdateStatusDTO
     {
+        // DTO para atualizar o status de uma mesa
         public string Status { get; set; } = string.Empty;
     }
 }
