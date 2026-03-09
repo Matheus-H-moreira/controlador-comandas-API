@@ -43,6 +43,13 @@ namespace Controlador_de_comandas.EndPoints
                 return Results.Ok(mesa);
             });
 
+            app.MapGet("/mesas/{idMesa}/comandas", async (int idMesa, AppDbContext db) =>
+            {
+                var comandas = db.Comandas.Where(c => c.MesaId == idMesa).ToListAsync();
+
+                return Results.Ok(comandas);
+            });
+
             //Atualiza o número de uma mesa
             app.MapPatch("/mesas/numero/{id}", async (int id, UpdateNumMesaDTO dto, AppDbContext db) =>
             {
